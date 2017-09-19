@@ -1,0 +1,124 @@
+<!-- index.html -->
+<!doctype html>
+
+<!-- ANGULAR MODULE ZUWEISEN -->
+<html ng-app="partyPlaner">
+<head>
+  <!-- META INFORMATIONEN-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
+
+  <title>Partyplaner Mosbach</title>
+
+  <!-- SCROLLS -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+  <style>
+      html                    { overflow-y:scroll; }
+      body                    { padding-top:50px; }
+      #event-list              { margin-bottom:30px; }
+  </style>
+
+  <!-- ABHÄNGIGKEITEN -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script><!-- load angular -->
+  <script src="core.js"></script>
+
+</head>
+<!-- CONTROLLER EINSTELLEN UND EVENTS EMPFANGEN -->
+  <body ng-controller="mainController">
+    <div class="container">
+
+      <!-- HEADER UND EVENT ZÄHLER -->
+      <div class="jumbotron text-center">
+          <h1>Partys in und um Mosbach: <span class="label label-info">{{ events.length }}</span>
+          </h1>
+      </div>
+
+      <!-- FORM UM EVENTS ZU ERSTELLEN -->
+      <div id="event-form" class="row">
+          <div class="col-sm-10 col-sm-offset-2 text-center">
+              <form>
+                  <div class="row centered">
+                      <!-- VERBINDE INPUT FELDER MIT ANGULAR LOGIK IN CORE.JS -->
+                      <!-- DIVS FÜR RICHTIGE ABSTÄNDE (UNSICHTBARE BOOTSTRAP TABELLE) -->
+                      <div class="col-md-10">
+                        <input type="text" class="form-control input-lg text-center" placeholder="Partyname" ng-model="formData.name" required>
+                      </div>
+                      <div class="col-md-5">
+                        <input type="date" class="form-control input-lg text-center" placeholder="Datum" ng-model="formData.date" required>
+                      </div>
+                      <div class="col-md-5">
+                        <input type="time" class="form-control input-lg text-center" ng-model="formData.time">
+                      </div>
+                      <div class="col-md-5">
+                        <input type="text" class="form-control input-lg text-center" placeholder="Ort" ng-model="formData.location" required>
+                      </div>
+                      <div class="col-md-5">
+                        <input type="text" class="form-control input-lg text-center" placeholder="Gastgeber" ng-model="formData.host" required>
+                      </div>
+                      <div class="col-md-10">
+                        <textarea style="resize:none;" class="form-control input-lg text-center" placeholder="Generelle Infos: Was soll mitgebracht werden? Maximale Teilnehmeranzahl? ..." ng-model="formData.info" required></textarea>
+                      </div>
+                    </br>
+                  </div>
+                  </br>
+                  <div class="row centered col-sm-offset-3">
+                    <div class="col-md-5">
+                      <!-- BUTTON UM EVENT ZU ERSTELLEN -->
+                      <button type="submit" class="btn btn-primary btn-lg" ng-click="createEvent()" ng-disabled="!formData.name && !formData.location && !formData.host && !formData.date && !formData.info">Event erstellen</button>
+                    </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+
+      </br>
+      </br>
+
+      <!-- EVENT LISTE -->
+      <div id="event-list" class="row">
+          <div class="col-sm-4 col-sm-offset-4">
+              <!-- ÜBER ALLE $scope.events ITERIEREN -->
+              <div class="list-group" ng-repeat="event in events | orderBy: '-date':true">
+                  <h3 style="display: inline;">
+                    <!-- EVENT NAMEN ANZEIGEN -->
+                    <p>  {{ event.name }}  </p>
+                  </h3>
+                  <!-- INFORMATIONEN JEDES EVENTS ANZEIGEN -->
+                  <ul class="list-group">
+                    <li class="list-group-item"><strong>Datum:</strong> {{event.date | date:'dd.MM.yyyy'}}</li>
+                    <li class="list-group-item"><strong>Uhrzeit:</strong> {{event.time}}</li>
+                    <li class="list-group-item"><strong>Ort:</strong> {{event.location}}</li>
+                    <li class="list-group-item"><strong>Gastgeber:</strong> {{event.host}}</li>
+                    <li class="list-group-item"><strong>Info:</strong> {{event.info}}</li>
+                    <!-- INPUT FELD FÜR GÄSTE -->
+                    <input class="form-control input-lg text-center" placeholder="Teilnehmer : Mitbringsel" ng-model="participantForm.participant" required></input>
+                    <!-- BUTTON UM SICH ANZUMELDEN -->
+                    <button type="text" class="btn btn-secondary" ng-click="addParticipant(event._id)" ng-disabled="!participantForm.participant">Zusagen</button>
+                    <li class="list-group-item justify-content-between">
+                      <strong>Bereits angemeldet</strong>
+                      <!-- COUNTER FÜR ZUGESAGTE GÄSTE (LÄNGE DES TEILNEHMER ARRAYS) -->
+                      <span class="badge badge-default badge-pill"> {{event.participants.length}} </span>
+                    </li>
+                      <ul class="list-group">
+                        <!-- ÜBER TEILNEHMER ARRAY ITERIEREN UND NAMEN ANZEIGEN -->
+                        <li class="list-group-item" ng-repeat="participant in event.participants"> {{ participant }} </li>
+                      </ul>
+                      <!-- BUTTON UM EVENT ZU LÖSCHEN -->
+                      <div class="float-right">
+                        <button type="button" class="float-right btn btn-danger" ng-click="deleteEvent(event._id)"> {{event.name}}
+                          <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                      </br>
+                      </div>
+                  </ul>
+                </br>
+              </div>
+          </div>
+      </div>
+
+    </div>
+
+  </body>
+
+</html>
